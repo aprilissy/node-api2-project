@@ -24,7 +24,7 @@ function findById(id) {
 function insert(post) {
   return db('posts')
     .insert(post, 'id')
-    .then(ids => ({ id: ids[0] }));
+    .then(ids => ({ id: ids[0], ...post }));
 }
 
 function update(id, post) {
