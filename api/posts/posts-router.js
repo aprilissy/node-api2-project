@@ -76,16 +76,11 @@ router.get('/:id/comments', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const id = req.params.id
-    console.log('id',id);
-    
     const post = await Poster.findById(id)
-    console.log('post',post);
-    
     if (post.length < 1) {
       res.status(404).json({ message: "The post with the specified ID does not exist." })
     } else {
       const del = await Poster.remove(id)
-      console.log('delete',del)
       if (del === 1){
         res.status(200).json(post)
       } else {
@@ -94,6 +89,28 @@ router.delete('/:id', async (req, res) => {
     }
   } catch {
     res.status(500).json({ error: "The post could not be removed" })
+  }
+})
+
+router.put('/:id', async (req, res) => {
+  try {
+    const id = req.params.id
+    const post = await Poster.findById(id)
+    if (post.length < 1) {
+      res.status(404).json({ message: "The post with the specified ID does not exist." })
+    } else if (!req.body.title || !req.body.contents){
+      res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+    } else{
+        const numUpdated = await Poster.update(id, req.body)     
+        if (numUpdated === 1) {
+          const updated = {...post[0], title:req.body.title, contents:req.body.contents}
+          res.status(200).json(updated)
+        } else {
+          res.status(500).json({ error: "1 The post information could not be modified." })
+        }
+    }
+  } catch {
+    res.status(500).json({ error: "2 The post information could not be modified." })
   }
 })
 
