@@ -8,8 +8,6 @@ router.post('/', (req, res) => {
   }
   Poster.insert(req.body)
     .then((post) => {
-      console.log('newPost', post);
-      
       res.status(201).json(post)
     })
     .catch(error => {
@@ -39,12 +37,28 @@ try{ const id = Number(req.params.id)
 router.get('/', async (req, res) => {
   try{
     const allPosts = await Poster.find()
-    console.log('allPosts',allPosts)
     res.status(200).json(allPosts)
   }
   catch{
     res.status(500).json({ message: "The post with the specified ID does not exist." })
   }
+})
+
+router.get('/:id', async (req, res) => {
+  try {
+   const post = await Poster.findById(req.params.id)
+    if(post.length > 0){
+      res.status(200).json(post)
+    }else {
+      res.status(404).json({ message: "The post with the specified ID does not exist." })
+    }
+  } catch {
+    res.status(500).json({ error: "The post information could not be retrieved." })
+  }
+})
+
+router.get('/:id/comments', (req, res) => {
+
 })
 
 module.exports = router
