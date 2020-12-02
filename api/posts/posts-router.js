@@ -36,4 +36,15 @@ try{ const id = Number(req.params.id)
   }
 })
 
+router.get('/', async (req, res) => {
+  try{
+    const allPosts = await Poster.find()
+    console.log('allPosts',allPosts)
+    res.status(200).json(allPosts)
+  }
+  catch{
+    res.status(500).json({ message: "The post with the specified ID does not exist." })
+  }
+})
+
 module.exports = router
