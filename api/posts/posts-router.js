@@ -47,7 +47,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
    const post = await Poster.findById(req.params.id)
-    if(post.length > 0){
+    if (post.length > 0) {
       res.status(200).json(post)
     }else {
       res.status(404).json({ message: "The post with the specified ID does not exist." })
@@ -57,8 +57,44 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.get('/:id/comments', (req, res) => {
+router.get('/:id/comments', async (req, res) => {
+  try {
+    const id = req.params.id
+    const post = await Poster.findById(id)
+    if (post.length < 1) {
+      res.status(404).json({ message: "The post with the specified ID does not exist." })
+    } else {
+      const comments = await Poster.findPostComments(id)
+      console.log('comments',comments)
+      res.status(200).json(comments)
+    }
+  } catch {
+    res.status(500).json({ error: "The comments information could not be retrieved." })
+  }
+})
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = req.params.id
+    console.log('id',id);
+    
+    const post = await Poster.findById(id)
+    console.log('post',post);
+    
+    if (post.length < 1) {
+      res.status(404).json({ message: "The post with the specified ID does not exist." })
+    } else {
+      const del = await Poster.remove(id)
+      console.log('delete',del)
+      if (del === 1){
+        res.status(200).json(post)
+      } else {
+        res.status(500).json({ error: "The post could not be removed" })
+      }
+    }
+  } catch {
+    res.status(500).json({ error: "The post could not be removed" })
+  }
 })
 
 module.exports = router
